@@ -46,6 +46,5 @@ class ArticlesListView(ListView):
 
         c['tag_list'] = set(tag_list) # Remove duplicates and put it in the context.
         c['keyword'] = self.keyword
-        print self.keyword
 
         return c
