@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block content %}
+  <!-- <h1>Articles</h1>
+  <ul>
+  {% for article in article_list %}
+    <li>{{ article.created }} - {{ article.title }} - {{article.tags}}</li>
+  {% empty %}
+    <li>No articles yet.</li>
+  {% endfor %}
+  </ul> -->
+
+<div class="row">
+  <div class="col-xs-12">
+    <form class="form-inline" method="get" action="/">
+      <div class="row">
+        <div class="col-xs-8">
+          <input class="form-control input-lg" type="text" name="keyword" value="{{keyword}}" placeholder="Search">
+        </div>
+        <div class="col-xs-2">
+          <button type="submit" class="btn btn-primary btn-block">Search</button>
+        </div>
+        <div class="col-xs-2">
+          <a class="btn btn-default btn-block" href="/">Clear</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<hr />
+
+  <div class="row">
+    <div class="col-xs-8">
+      {% for article in object_list %}
+      <div class="col-xs-6 col-lg-4">
+        <h2>{{article.title}}</h2>
+        <p>{{article.content}}</p>
+        <p><em>Views:</em> {{article.views}}</p>
+        <p><em>Comments:</em> {{article.comments}}</p>
+        <p><em>Created:</em> {{article.created}}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="col-xs-4">
+      {% for tag in tag_list %}
+      <a href="?tag={{tag}}" style="font-size: large;">{{tag}}</a>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
