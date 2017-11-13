@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-offset-4 col-xs-8">
+      <form method="post">
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+        </div>
+
+        <button type="submit" class="btn btn-default bnt-block">Login</button>
+
+      </form>
+      </div>
+  </div>
+{% endblock %}

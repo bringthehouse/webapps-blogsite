@@ -14,11 +14,17 @@ class Articles(models.Model):
 
     views = models.IntegerField(default=0)
     comments = models.IntegerField(default=0)
-    created = models.DateTimeField(default=datetime.now())
-    updated = models.DateTimeField(default=datetime.now())
+    created = models.DateTimeField(null=True,default=None)
+    updated = models.DateTimeField(null=True,default=None)
 
     def __str__(self):
         return self.title
 
-    # class Meta:
-    #     ordering = ['-created']
+class Comment(models.Comment):
+    comment = models.TextField(blank=False)
+    article = models.ForeignKey(Article)
+    author = models.ForeignKey(User)
+    created = models.DateTimeField(null=True,default=None)
+
+    def __str__(self):
+        return self.comment

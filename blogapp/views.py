@@ -1,17 +1,23 @@
 from django.shortcuts import render
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.contrib.auth.views import LoginView
+
 from django.views.generic import TemplateView
-from django.views.generic.list import ListView
+from django.views.generic import DetailView, ListView, CreateView, UpdateView
 
-from .models import Articles
+from .models import Articles, Comments
+from datetime import datetime
 
-# Create your views here.
-class SimpleView(TemplateView):
-    template_name = "simple.html"
+from django.shortcuts import redirect
+
+class CustomLoginView(LoginView):
+    template_name = "login.html"
 
 class ArticlesListView(ListView):
     model = Articles
-    template_name = "articles.html"
+    template_name = "article-list.html"
     ordering = ['title']
 
     keyword = None # Get keyword in our context if any.
@@ -48,3 +54,65 @@ class ArticlesListView(ListView):
         c['keyword'] = self.keyword
 
         return c
+
+class ArticleDetailView(DetailView):
+    model = Article
+    template_name = "article-detail.html"
+
+    def get_object(self):
+        obj = super(ArticleCreateView, self).get_object()
+
+        if self.request.method == "post":
+            obj.views -= 1
+        else:
+            obj.views += 1
+        obj.save()
+
+        return obj
+
+    def get_context_data(self, **kwargs):
+        c = super(ArticleDetailView, self).get_context_data(**kwargs)
+        c['comments'] = Comment.objects.filter(article=self.object).order_by('-created')
+        return c
+
+    def post(self, request, *args, **kwargs):
+        if not self.request.is_authenticated:
+            return redirect('/accounts/login/')
+
+        article = self.get_object()
+
+        comment = Comment(comment=self.request.POST.get('comment'), article=article, author=self.request.user, created=datetime.now())
+        comment.save()
+
+        article.comments += 1
+        article.save()
+
+        return redirect('/articles/' + article.id)
+
+class ArticleCreateView(LoginRequiredMixin, CreateView):
+    login_url = '/accounts/login/'
+
+    model = Article
+    fields = ['title', 'content', 'tags']
+    template_name = "article-create.html"
+
+    def form_valid(self, form):
+        self.form.instance.author = self.request.user
+        self.form.instance.created = datetime.now()
+        self.form.instance.updated = datetime.now()
+        return super(ArticleCreateView, self).form_valid(form)
+
+class ArticleUpdateView(LoginRequiredMixin, UpdateView):
+    login_url = '/accounts/login/'
+
+    model = Article
+    fields = ['title', 'content', 'tags']
+    template_name = "article-update.html"
+
+    def get_queryset(self):
+        q = super(ArticleUpdateView, self).get_queryset()
+        return q.filter(author=self.request.user)
+
+    def form_valid(self, form):
+        self.form.instance.updated = datetime.now()
+        return super(ArticleCreateView, self).form_valid(form)

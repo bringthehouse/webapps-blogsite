@@ -16,12 +16,19 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from django.contrib.auth.views import LogoutView
 from blogapp import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    url(r'^$', views.ArticlesListView.as_view())
+    url(r'^accounts/login/$', views.CustomLoginView.as_view())
+    url(r'^accounts/logout/$', LogoutView.as_view())
+
+    url(r'^$', views.ArticlesListView.as_view()),
+
+
+
 
 
 ]

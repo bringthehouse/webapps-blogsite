@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <form method="post">{% csrf_token %}
+
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{form.title.value}}" placeholder="Title">
+      </div>
+
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea class="form-control" id="content" name="content" value="{{form.tags.value}}" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="tags">Tags</label>
+        <input type="text" class="form-control" id="tags" name="tags" value="{{form.content.value}}" placeholder="e.g. tag1, tag2">
+      </div>
+
+
+      <button type="submit" class="btn btn-default">Update</button>
+      <a href="/articles/{{object.id}}" class="btn btn-warning">Cancel</a>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
