@@ -33,28 +33,40 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Fake Observer</a>
+            <a class="navbar-brand" href="{% url 'article-list' %}">Fake Observer</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-              <li><a href="/">Home</a></li>
-              {% if request.user %}
-              <li><a href="/article/create/">Create</a></li>
+              <li><a href="{% url 'article-list' %}">Home</a></li>
+              {% if request.user.is_authenticated %}
+              <li><a href="{% url 'article-create' %}">Create</a></li>
               {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              {% if request.user %}
-              <li><a href="/accounts/logout/">Logout</a></li>
+              {% if request.user.is_authenticated %}
+              <li><a href="{% url 'logout' %}">Logout</a></li>
               {% else %}
-              <li><a href="/accounts/login/">Login</a></li>
+              <li><a href="{% url 'login' %}">Login</a></li>
               {% endif %}
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </nav>
 
+      <div class="content">
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% elif messages.tags == 'debug' %}info{% else %}{{message.tags}}{% endif %}">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            {{message}}
+          </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
       <!-- Jumbotron -->
       <div class="content">
+        <hr />
         {% block content %}{% endblock %}
       </div>
 

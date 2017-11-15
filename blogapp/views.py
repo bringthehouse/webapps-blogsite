@@ -1,19 +1,33 @@
 from django.shortcuts import render
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.shortcuts import redirect
 
-from django.contrib.auth.views import LoginView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
 
 from django.views.generic import TemplateView
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 
+from django.contrib import messages
+
 from .models import Article, Comment
 from datetime import datetime
 
-from django.shortcuts import redirect
-
 class CustomLoginView(LoginView):
     template_name = "login.html"
+
+    def get_success_url(self):
+        messages.success(self.request, 'You have been logged in')
+        return self.request.GET.get('next', "/")
+
+
+class CustomLogoutView(LogoutView):
+    def get_next_page(self):
+        messages.warning(self.request, 'You have been logged out')
+        return self.request.GET.get('next', "/")
 
 class ArticleListView(ListView):
     model = Article
@@ -62,7 +76,7 @@ class ArticleDetailView(DetailView):
     def get_object(self):
         obj = super(ArticleDetailView, self).get_object()
 
-        if self.request.method == "post":
+        if self.request.method == "POST":
             obj.views -= 1
         else:
             obj.views += 1
@@ -72,30 +86,34 @@ class ArticleDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         c = super(ArticleDetailView, self).get_context_data(**kwargs)
-        c['comments'] = Comment.objects.filter(article=self.object).order_by('-created')
+        c['comment_list'] = Comment.objects.filter(article=self.object).order_by('-created')
         return c
 
     def post(self, request, *args, **kwargs):
-        if not self.request.is_authenticated:
+        if not self.request.user.is_authenticated:
             return redirect('/accounts/login/')
 
         article = self.get_object()
-
         comment = Comment(comment=self.request.POST.get('comment'), article=article, author=self.request.user, created=datetime.now())
         comment.save()
+
+        messages.success(request, 'Comment added successfully')
 
         article.comments += 1
         article.save()
 
-        return redirect('/article/' + article.id)
+        return HttpResponseRedirect(reverse('article-detail', args=(article.id,)))
 
-class ArticleCreateView(LoginRequiredMixin, CreateView):
+class ArticleCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     login_url = '/accounts/login/'
 
     model = Article
     fields = ['title', 'content', 'tags']
     template_name = "article-create.html"
-    success_url = '/'
+    success_message = "%(title)s was created successfully"
+
+    def get_success_url(self):
+        return reverse('article-detail', args=(self.object.id,))
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -103,18 +121,22 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
         form.instance.updated = datetime.now()
         return super(ArticleCreateView, self).form_valid(form)
 
-class ArticleUpdateView(LoginRequiredMixin, UpdateView):
+class ArticleUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     login_url = '/accounts/login/'
 
     model = Article
     fields = ['title', 'content', 'tags']
     template_name = "article-update.html"
+    success_message = "%(title)s was updated successfully"
 
+    def get_success_url(self):
+        return reverse('article-detail', args=(self.object.id,))
 
     def get_queryset(self):
         q = super(ArticleUpdateView, self).get_queryset()
         return q.filter(author=self.request.user)
 
     def form_valid(self, form):
-        self.form.instance.updated = datetime.now()
-        return super(ArticleCreateView, self).form_valid(form)
+        form.instance.updated = datetime.now()
+        form.instance.views -= 1
+        return super(ArticleUpdateView, self).form_valid(form)

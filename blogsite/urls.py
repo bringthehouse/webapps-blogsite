@@ -22,8 +22,8 @@ from blogapp import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    url(r'^accounts/login/$', views.CustomLoginView.as_view()),
-    url(r'^accounts/logout/$', LogoutView.as_view()),
+    url(r'^accounts/login/$', views.CustomLoginView.as_view(), name="login"),
+    url(r'^accounts/logout/$', views.CustomLogoutView.as_view(next_page="/"), name="logout"),
 
     url(r'^$', views.ArticleListView.as_view(), name="article-list"),
     url(r'^article/create/', views.ArticleCreateView.as_view(), name="article-create"),
