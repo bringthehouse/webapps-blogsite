@@ -38,7 +38,7 @@
       {% for article in object_list %}
       <div class="col-xs-6 col-lg-4">
         <h2><a href="/article/{{article.id}}">{{article.title}}</a></h2>
-        <p>{{article.content}}</p>
+        <p>{{article.content|truncatechars:200}}</p>
         <p><em>Views:</em> {{article.views}}</p>
         <p><em>Comments:</em> {{article.comments}}</p>
         <p><em>Created:</em> {{article.created}}</p>
