@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Articles{% endblock %}
+{% block title %}Article{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -9,7 +9,7 @@
 
       <div class="form-group">
         <label for="title">Title</label>
-        <input type="text" class="form-control" id="title" name="title" value="{{form.title.value}}" placeholder="Title">
+        <input type="text" class="form-control" id="title" name="title"  placeholder="Title">
       </div>
 
       <div class="form-group">
@@ -19,12 +19,12 @@
 
       <div class="form-group">
         <label for="tags">Tags</label>
-        <input type="text" class="form-control" id="tags" name="tags" value="{{form.content.value}}" placeholder="e.g. tag1, tag2">
+        <input type="text" class="form-control" id="tags" name="tags" placeholder="e.g. tag1, tag2">
       </div>
 
 
       <button type="submit" class="btn btn-default">Create</button>
-      <a href="/articles/" class="btn btn-warning">Cancel</a>
+      <a href="/" class="btn btn-warning">Cancel</a>
 
     </form>
   </div>

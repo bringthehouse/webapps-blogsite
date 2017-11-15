@@ -7,7 +7,7 @@ from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 
-from .models import Articles, Comments
+from .models import Article, Comment
 from datetime import datetime
 
 from django.shortcuts import redirect
@@ -15,15 +15,15 @@ from django.shortcuts import redirect
 class CustomLoginView(LoginView):
     template_name = "login.html"
 
-class ArticlesListView(ListView):
-    model = Articles
+class ArticleListView(ListView):
+    model = Article
     template_name = "article-list.html"
     ordering = ['title']
 
     keyword = None # Get keyword in our context if any.
 
     def get_queryset(self):
-        q = super(ArticlesListView, self).get_queryset()
+        q = super(ArticleListView, self).get_queryset()
 
         # Search based on tag.
         tag = self.request.GET.get('tag', '')
@@ -36,17 +36,17 @@ class ArticlesListView(ListView):
             q = q.filter(title__icontains=self.keyword)
 
         return q
-        # return Articles.objects.all().order_by('-title')
+        # return Article.objects.all().order_by('-title')
 
     def get_context_data(self, **kwargs):
         """
         - Define extra data for the template.
         """
-        c = super(ArticlesListView, self).get_context_data(**kwargs)
+        c = super(ArticleListView, self).get_context_data(**kwargs)
 
         # Get the tags from our
         tag_list = []
-        for article in Articles.objects.all():
+        for article in Article.objects.all():
             tags = [t.strip() for t in article.tags.split(',')]
             tag_list.extend(tags)
 
@@ -60,7 +60,7 @@ class ArticleDetailView(DetailView):
     template_name = "article-detail.html"
 
     def get_object(self):
-        obj = super(ArticleCreateView, self).get_object()
+        obj = super(ArticleDetailView, self).get_object()
 
         if self.request.method == "post":
             obj.views -= 1
@@ -87,7 +87,7 @@ class ArticleDetailView(DetailView):
         article.comments += 1
         article.save()
 
-        return redirect('/articles/' + article.id)
+        return redirect('/article/' + article.id)
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
     login_url = '/accounts/login/'
@@ -95,11 +95,12 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = Article
     fields = ['title', 'content', 'tags']
     template_name = "article-create.html"
+    success_url = '/'
 
     def form_valid(self, form):
-        self.form.instance.author = self.request.user
-        self.form.instance.created = datetime.now()
-        self.form.instance.updated = datetime.now()
+        form.instance.author = self.request.user
+        form.instance.created = datetime.now()
+        form.instance.updated = datetime.now()
         return super(ArticleCreateView, self).form_valid(form)
 
 class ArticleUpdateView(LoginRequiredMixin, UpdateView):
@@ -108,6 +109,7 @@ class ArticleUpdateView(LoginRequiredMixin, UpdateView):
     model = Article
     fields = ['title', 'content', 'tags']
     template_name = "article-update.html"
+
 
     def get_queryset(self):
         q = super(ArticleUpdateView, self).get_queryset()

@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Articles{% endblock %}
+{% block title %}Article{% endblock %}
 
 {% block content %}
   <div class="row">
     <div class="col-xs-12 text-right">
       {% if request.user.id == object.user.id %}
-      <a class="btn btn-default btn-block" href="/articles/{{article.id}}/edit/">Edit</a>
+      <a class="btn btn-default btn-block" href="/Article/{{article.id}}/edit/">Edit</a>
       {% endif %}
     </div>
   </div>
@@ -40,6 +40,9 @@
   {% else %}
   <p>Please <a href="/accounts/login/">log in</a> to post a comment.</p>
   {% endif %}
+
+  <hr />
+  <h3>Comments</h3>
 
   <div class="row">
     <div class="col-xs-12">

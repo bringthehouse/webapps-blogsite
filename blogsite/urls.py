@@ -22,10 +22,14 @@ from blogapp import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    url(r'^accounts/login/$', views.CustomLoginView.as_view())
-    url(r'^accounts/logout/$', LogoutView.as_view())
+    url(r'^accounts/login/$', views.CustomLoginView.as_view()),
+    url(r'^accounts/logout/$', LogoutView.as_view()),
 
-    url(r'^$', views.ArticlesListView.as_view()),
+    url(r'^$', views.ArticleListView.as_view(), name="article-list"),
+    url(r'^article/create/', views.ArticleCreateView.as_view(), name="article-create"),
+    url(r'^article/(?P<pk>\d+)/edit/', views.ArticleUpdateView.as_view(), name="article-update"),
+    url(r'^article/(?P<pk>\d+)/', views.ArticleDetailView.as_view(), name="article-detail"),
+
 
 
 

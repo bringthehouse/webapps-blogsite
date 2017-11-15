@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from datetime import datetime
 
 # Create your models here.
-class Articles(models.Model):
+class Article(models.Model):
     slug_field = models.SlugField()
     title = models.CharField(max_length=100, blank=False)
     tags = models.CharField(max_length=100, blank=False)
@@ -20,7 +20,7 @@ class Articles(models.Model):
     def __str__(self):
         return self.title
 
-class Comment(models.Comment):
+class Comment(models.Model):
     comment = models.TextField(blank=False)
     article = models.ForeignKey(Article)
     author = models.ForeignKey(User)
